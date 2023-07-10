@@ -1,0 +1,126 @@
+<?php
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityViewBuilder;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
+use Drupal\mymodule\Controller\FirstController;
+use Drupal\node\NodeInterface;
+use Drupal\user\Entity\Role;
+use Drupal\user\UserInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
+/**
+ *@file
+ *This file demonstartes how to use hook functions
+ */
+
+/**
+ *Implements hook_cron().
+ */
+function mymodule_cron()
+{
+  \Drupal::messenger()->addMessage(t("Hello from mymodule cron hook!!!"));
+  $obj = new FirstController();
+  $obj->test();
+}
+
+/**
+ *Implements hook_form_alter().
+ */
+function mymodule_form_alter(&$form, FormStateInterface $form_state, $form_id)
+{
+  if (\Drupal::currentUser()->hasPermission('administer rsvplist')) {
+    \Drupal::messenger()->addMessage(t($form_id));
+  }
+  if ($form_id == 'node_article_edit_form') {
+    $form['actions']['submit']['#value'] = t("Save this awesome article");
+  }
+  if($form_id == 'user_login_form') {
+    $form['#submit'][] = 'mymodule_user_login_submit';
+  }
+}
+
+function mymodule_user_login_submit(&$form, FormStateInterface $form_state) {
+  $url = Url::fromRoute('mymodule.simpleContent');
+  $form_state->setRedirectUrl($url);
+}
+
+/**
+ * Implements hook_preprocess_page().
+ */
+// function mymodule_preprocess_page(&$variable) {
+//   dump($variable);
+//   dump('hello');
+//   // dump('world');
+// }
+
+/**
+ * Implements hook_ENTITY_TYPE_view()
+ */
+function mymodule_node_view(array &$build, EntityInterface $entity)
+{
+  $session = \Drupal::request()->getSession();
+  $current_counts = $session->get('hook_view_count', array());
+  if (!isset($current_counts[$entity->id()])) {
+    $current_counts[$entity->id()] = 1;
+  } else {
+    $current_counts[$entity->id()]++;
+  }
+  $session->set('hook_view_count', $current_counts);
+  // Invoke a hook to alert other modules.
+  $module_handler = \Drupal::moduleHandler();
+  $module_handler->invokeAll('hook_view_count', array($current_counts[$entity->id()], $entity));
+  $build['view_count'] = array(
+    '#markup' => '<p>' . t('You viewed this page @total times', array('@total' => $current_counts[$entity->id()])) . '</p>',
+    '#cache' => array(
+      'max_age' => 0,
+    )
+  );
+}
+
+/**
+ * Implements hook_view_count().
+ */
+function mymodule_view_count($current_count)
+{
+  if ($current_count == 1) {
+    \Drupal::messenger()->addMessage(t('This is the first time you\'re viewing this page.'));
+  }
+}
+
+/**
+ * Implements hook_entity_access()
+ */
+// function mymodule_entity_access(EntityInterface $entity, $operation, AccountInterface $account)
+// {
+//   // Get the current route name.
+//   $current_route = \Drupal::routeMatch()->getRouteName();
+//   // Check if the current route matches the desired page route.
+//   if ($current_route === 'mymodule.simpleContent') {
+//     // Check if the user has the "content_editor" role.
+//     if ($account->hasRole('content_editor')) {
+//       $role = Role::load('content_editor');
+//       if ($role) {
+
+//         $allPermission1 = $role->getPermissions();
+
+//         // Revoke the "access the custom page" permission from the user's role.
+//         $role->revokePermission('access the custom page');
+//         $role->save();
+//         $allPermission2 = $role->getPermissions();
+//         // Reloading the same page after removing permissions.
+//         $response = new RedirectResponse(\Drupal::request()->getRequestUri());
+//         $response->send();
+//       }
+//     }
+//   }
+// }
+
+/**
+ * Implements hook_user_login()
+ */
+function mymodule_user_login(UserInterface $account) {
+  $response = new RedirectResponse('/mycustompath');
+  $response->send();
+}

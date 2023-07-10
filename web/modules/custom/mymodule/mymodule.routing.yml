@@ -1,0 +1,33 @@
+mymodule.simpleContent:
+  path: "/mycustompath"
+  defaults:
+    _controller: '\Drupal\mymodule\Controller\FirstController::simpleContent'
+    _title: "Simplicity of Nature"
+  requirements:
+    _permission: "access the custom page"
+    # _role: 'administrator + content_editor'
+
+mymodule.variableContent:
+  path: "/mycustompath/{name1}/{name2}"
+  defaults:
+    _controller: '\Drupal\mymodule\Controller\FirstController::variableContent'
+    _title: "Dynamic Greeting"
+  requirements:
+    _permission: "access content"
+
+mymodule.hello:
+  path: "/hello"
+  defaults:
+    _controller: '\Drupal\mymodule\Controller\FirstController::hello'
+    _title: "Hello Page"
+  requirements:
+    _permission: "access content"
+
+
+mymodule.formdemo:
+  path: '/admin/config/blockform'
+  defaults:
+    _form: '\Drupal\mymodule\Form\BlockForm'
+    _title: 'Block Form Demo'
+  requirements:
+    _permission: 'access custompage'
