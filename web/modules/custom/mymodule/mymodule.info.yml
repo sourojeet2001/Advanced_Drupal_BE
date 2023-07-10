@@ -1,0 +1,8 @@
+name: "My Module"
+type: module
+core_version_requirement: ^10
+description: "This is a custom module"
+package: "Module Dev"
+# Adding dependency of paragraphs module.
+dependencies:
+  -paragraphs:paragraphs
