@@ -1,0 +1,21 @@
+<?php
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Session\AccountInterface;
+use Symfony\Component\Routing\RouteCollection;
+
+/**
+ * @file
+ * This file contains all the hooks for this module.
+ */
+
+function rsvplist_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if($route == 'rsvp.userlogin') {
+    $permission = 'access custompage';
+    $role = \Drupal\user\Entity\Role::load('content_editor');
+    if($role) {
+      $role->revokePermission($permission);
+      $role->save();
+    }
+  }
+}

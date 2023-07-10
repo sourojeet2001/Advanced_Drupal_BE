@@ -1,0 +1,33 @@
+rsvplist.formdemo:
+  path: '/rsvplistdemo'
+  defaults:
+    _form: '\Drupal\rsvplist\Form\RSVPForm'
+    _title: 'RSVP Form Demo'
+  requirements:
+    _permission: 'access custompage'
+
+rsvp.multi:
+  path: '/multi'
+  defaults:
+    _form: '\Drupal\rsvplist\Form\MultiForm'
+    _title: 'Multi Form Demo'
+  requirements:
+    _permission: 'access custompage'
+
+
+rsvp.userlogin:
+  path: '/userlogin'
+  defaults:
+    _form: '\Drupal\rsvplist\Form\UserLoginForm'
+    _title: 'OTTL Form Demo'
+  requirements:
+    _permission: 'access custompage'
+    _role: administrator + content_editor
+    
+config.custom:
+  path: '/admin/config/config-custom'
+  defaults:
+    _form: '\Drupal\rsvplist\Form\CustomForm'
+    _title: 'Custom Form Demo'
+  requirements:
+    _permission: 'administer site configuration'
